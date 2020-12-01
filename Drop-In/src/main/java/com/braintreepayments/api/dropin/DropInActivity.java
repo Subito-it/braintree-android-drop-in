@@ -42,6 +42,7 @@ import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountNonce;
+import com.braintreepayments.api.models.GooglePaymentCardNonce;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
@@ -201,7 +202,8 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
 
     @Override
     public void onPaymentMethodNonceCreated(final PaymentMethodNonce paymentMethodNonce) {
-        if (!mPerformedThreeDSecureVerification && paymentMethodNonce instanceof CardNonce &&
+        if (!mPerformedThreeDSecureVerification &&
+                paymentMethodCanPerformThreeDSecureVerification(paymentMethodNonce) &&
                 shouldRequestThreeDSecureVerification()) {
             mPerformedThreeDSecureVerification = true;
             mLoadingViewSwitcher.setDisplayedChild(0);
@@ -232,6 +234,18 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
         });
     }
 
+    private boolean paymentMethodCanPerformThreeDSecureVerification(final PaymentMethodNonce paymentMethodNonce) {
+        if (paymentMethodNonce instanceof CardNonce) {
+            return true;
+        }
+
+        if (paymentMethodNonce instanceof GooglePaymentCardNonce) {
+            return ((GooglePaymentCardNonce) paymentMethodNonce).isNetworkTokenized() == false;
+        }
+
+        return false;
+    }
+
     @Override
     public void onPaymentMethodSelected(PaymentMethodType type) {
         mLoadingViewSwitcher.setDisplayedChild(0);
@@ -252,7 +266,7 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
                 GooglePayment.requestPayment(mBraintreeFragment, mDropInRequest.getGooglePaymentRequest());
                 break;
             case PAY_WITH_VENMO:
-                Venmo.authorizeAccount(mBraintreeFragment);
+                Venmo.authorizeAccount(mBraintreeFragment, mDropInRequest.shouldVaultVenmo());
                 break;
             case UNKNOWN:
                 Intent intent = new Intent(this, AddCardActivity.class)

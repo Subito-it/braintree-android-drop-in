@@ -6,21 +6,13 @@ Braintree Android Drop-In is a readymade UI that allows you to accept card and a
 
 <img alt="Screenshot of Drop-In" src="screenshots/vaulted-payment-methods.png" width="300"/>
 
-## What's new in 3.0
-
-* All new UI and integration for Drop-In
-* Fetch a customer's saved payment method without showing UI
-* Added UnionPay support to Drop-In
-
-Please create an [issue](https://github.com/braintree/braintree-android-drop-in/issues) with any comments or concerns.
-
 ## Adding it to your project
 
 Add the dependency in your `build.gradle`:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:drop-in:4.4.1'
+  implementation 'com.braintreepayments.api:drop-in:5.0.1'
 }
 ```
 
@@ -28,7 +20,7 @@ To use the latest build from the `master` branch use:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:drop-in:4.4.1-SNAPSHOT'
+  implementation 'com.braintreepayments.api:drop-in:5.0.2-SNAPSHOT'
 }
 ```
 
@@ -136,18 +128,6 @@ DropInResult.fetchDropInResult(activity, clientToken, new DropInResult.DropInRes
 });
 ```
 
-### card.io
-
-To offer card scanning via [card.io](https://card.io), add the dependency in your `build.gradle`:
-
-```groovy
-dependencies {
-    implementation 'io.card:android-sdk:5.+'
-}
-```
-
-Drop-In will include a menu icon to scan cards when card.io is included.
-
 ## Help
 
 * [Read the javadocs](http://javadoc.io/doc/com.braintreepayments.api/drop-in/)
@@ -162,11 +142,6 @@ Here are a few ways to get in touch:
 * [GitHub Issues](https://github.com/braintree/braintree-android-drop-in/issues) - For generally applicable issues and feedback
 * [Braintree Support](https://articles.braintreepayments.com/) / [support@braintreepayments.com](mailto:support@braintreepayments.com) -
 for personal support at any phase of integration
-
-## Releases
-
-Subscribe to our [Google Group](https://groups.google.com/forum/#!forum/braintree-sdk-announce) to
-be notified when SDK releases go out.
 
 ## License
 

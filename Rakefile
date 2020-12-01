@@ -44,11 +44,8 @@ task :release => :unit_tests do
 
   prompt_for_sonatype_username_and_password
 
-  sh "./gradlew clean :Drop-In:uploadArchives"
-  sh "./gradlew :Drop-In:closeRepository"
-  puts "Sleeping for one minute to allow Drop-In modules to close"
-  sleep 60
-  sh "./gradlew :Drop-In:promoteRepository"
+  sh "./gradlew clean :Drop-In:publishToSonatype"
+  sh "./gradlew closeAndReleaseRepository"
 
   post_release(version)
 end
@@ -59,7 +56,6 @@ task :assumptions do
     puts "* [ ] You have already merged hotfixes and pulled changes."
     puts "* [ ] You have already reviewed the diff between the current release and the last tag, noting breaking changes in the semver and CHANGELOG."
     puts "* [ ] Tests (rake integration_tests) are passing, manual verifications complete."
-    puts "* [ ] Email is composed and ready to send to braintree-sdk-announce@googlegroups.com"
 
     puts "Ready to release? Press any key to continue. "
     $stdin.gets
@@ -89,15 +85,12 @@ def post_release(version)
   $stdin.gets
 
   sh "git push origin master #{version}"
-
-  puts "\nUpdate the releases tab on GitHub and send a release notification email to braintree-sdk-announce@googlegroups.com. Press ENTER when done."
-  $stdin.gets
 end
 
 def get_current_version
   current_version = nil
-  File.foreach("Drop-In/build.gradle") do |line|
-    if match = line.match(/versionName '(\d+\.\d+\.\d+(-SNAPSHOT)?)'/)
+  File.foreach("build.gradle") do |line|
+    if match = line.match(/version '(\d+\.\d+\.\d+(-SNAPSHOT)?)'/)
       current_version = match.captures
     end
   end
@@ -107,20 +100,20 @@ end
 
 def increment_version_code
   new_build_file = ""
-  File.foreach("Drop-In/build.gradle") do |line|
+  File.foreach("build.gradle") do |line|
     if line.match(/versionCode (\d+)/)
-      new_build_file += line.gsub(/versionCode \d+/, "versionCode #{$1.to_i + 1}")
+      new_build_file += line.gsub(/versionCode = \d+/, "versionCode = #{$1.to_i + 1}")
     else
       new_build_file += line
     end
   end
-  IO.write('Drop-In/build.gradle', new_build_file)
+  IO.write('build.gradle', new_build_file)
 end
 
 def update_version(version)
-  IO.write("Drop-In/build.gradle",
-    File.open("Drop-In/build.gradle") do |file|
-      file.read.gsub(/version '\d+\.\d+\.\d+(-SNAPSHOT)?'/, "version '#{version}'")
+  IO.write("build.gradle",
+    File.open("build.gradle") do |file|
+      file.read.gsub(/^version '\d+\.\d+\.\d+(-SNAPSHOT)?'/, "version '#{version}'")
     end
   )
 end
