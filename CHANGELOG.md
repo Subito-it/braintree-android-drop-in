@@ -1,5 +1,8 @@
 # Braintree Android Drop-In Release Notes
 
+## 4.4.2 
+* Checked whether PayPal is enabled in DropInRequest also for vaulted payment methods. 
+
 ## 4.4.1 
 * Fix bug in `AddCardActivity#onError` that prevented passing error cases up to the appropriate listeners.
 
