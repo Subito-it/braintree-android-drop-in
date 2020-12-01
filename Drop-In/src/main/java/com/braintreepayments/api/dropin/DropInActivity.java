@@ -41,6 +41,7 @@ import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
+import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
@@ -280,6 +281,15 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
 
     @Override
     public void onPaymentMethodNoncesUpdated(List<PaymentMethodNonce> paymentMethodNonces) {
+
+        if (!mDropInRequest.isPayPalEnabled()) {
+            for (int i = paymentMethodNonces.size() - 1; i >= 0; i --) {
+                if (paymentMethodNonces.get(i) instanceof PayPalAccountNonce) {
+                    paymentMethodNonces.remove(i);
+                }
+            }
+        }
+
         if (paymentMethodNonces.size() > 0) {
             mSupportedPaymentMethodsHeader.setText(R.string.bt_other);
             mVaultedPaymentMethodsContainer.setVisibility(View.VISIBLE);
