@@ -1,4 +1,10 @@
+plugins {
+    id "com.jfrog.artifactory" version "4.9.10"
+}
+
 apply plugin: 'com.android.library'
+apply plugin: 'com.jfrog.artifactory'
+apply plugin: 'maven-publish'
 apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'io.codearte.nexus-staging'
@@ -179,6 +185,35 @@ uploadArchives {
                     }
                 }
             }
+        }
+    }
+}
+
+publishing {
+    publications {
+        aar(MavenPublication) {
+            groupId 'com.braintreepayments.api'
+            artifactId 'drop-in'
+            version = '4.4.2'
+            artifact("$buildDir/outputs/aar/Drop-In-release.aar")
+        }
+    }
+}
+
+artifactory {
+    publish {
+        contextUrl = System.getenv("ARTIFACTORY_CONTEXT")
+        repository {
+            repoKey = 'libs-release-local'
+            username = System.getenv("ARTIFACTORY_USER")
+            password = System.getenv("ARTIFACTORY_PWD")
+        }
+        defaults {
+            publications('aar')
+            publishArtifacts = true
+            publishBuildInfo = false
+            publishPom = true
+            publishIvy = false
         }
     }
 }
